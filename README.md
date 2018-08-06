@@ -1,24 +1,24 @@
 # clean-code-javascript
 
 ## Table of Contents
-  1. [介紹](#introduction)
+  1. [介紹](#介紹)
   2. [變數](#變數)
-  3. [Functions](#functions)
-  4. [Objects and Data Structures](#objects-and-data-structures)
-  5. [Classes](#classes)
+  3. [函式](#函式)
+  4. [物件與資料結構](#物件與資料結構)
+  5. [類別](#類別)
   6. [SOLID](#solid)
-  7. [Testing](#testing)
+  7. [測試](#測試)
   8. [Concurrency](#concurrency)
-  9. [Error Handling](#error-handling)
-  10. [Formatting](#formatting)
-  11. [Comments](#comments)
-  12. [Translation](#translation)
+  9. [錯誤處理](#錯誤處理)
+  10. [格式](#格式)
+  11. [註解](#註解)
+  12. [參考來源]](#參考來源)
 
 ## 介紹
 javascript 程式碼撰寫原則
 
 ## **變數**
-### 變數名稱的命名盡可能有意義且具備可讀性 (_meaningful and pronounceable_)
+### 變數名稱的命名盡可能有意義且具備可讀性 _meaningful and pronounceable_
 
 **Bad:**
 ```javascript
@@ -175,7 +175,7 @@ function createMicrobrewery(name = 'Hipster Brew Co.') {
 ```
 **[⬆ back to top](#table-of-contents)**
 
-## **Functions**
+## **函式**
 ### Function arguments (2 or fewer ideally)
 Limiting the amount of function parameters is incredibly important because it
 makes testing your function easier. Having more than three leads to a
@@ -901,7 +901,7 @@ inventoryTracker('apples', req, 'www.inventory-awesome.io');
 ```
 **[⬆ back to top](#table-of-contents)**
 
-## **Objects and Data Structures**
+## **物件與資料結構**
 ### Use getters and setters
 Using getters and setters to access data on objects could be better than simply
 looking for a property on an object. "Why?" you might ask. Well, here's an
@@ -999,7 +999,7 @@ console.log(`Employee name: ${employee.getName()}`); // Employee name: John Doe
 **[⬆ back to top](#table-of-contents)**
 
 
-## **Classes**
+## **類別**
 ### Prefer ES2015/ES6 classes over ES5 plain functions
 It's very difficult to get readable class inheritance, construction, and method
 definitions for classical ES5 classes. If you need inheritance (and be aware
@@ -1650,72 +1650,8 @@ inventoryTracker.requestItems();
 ```
 **[⬆ back to top](#table-of-contents)**
 
-## **Testing**
-Testing is more important than shipping. If you have no tests or an
-inadequate amount, then every time you ship code you won't be sure that you
-didn't break anything. Deciding on what constitutes an adequate amount is up
-to your team, but having 100% coverage (all statements and branches) is how
-you achieve very high confidence and developer peace of mind. This means that
-in addition to having a great testing framework, you also need to use a
-[good coverage tool](http://gotwarlost.github.io/istanbul/).
-
-There's no excuse to not write tests. There are [plenty of good JS test frameworks](http://jstherightway.org/#testing-tools), so find one that your team prefers.
-When you find one that works for your team, then aim to always write tests
-for every new feature/module you introduce. If your preferred method is
-Test Driven Development (TDD), that is great, but the main point is to just
-make sure you are reaching your coverage goals before launching any feature,
-or refactoring an existing one.
-
-### Single concept per test
-
-**Bad:**
-```javascript
-import assert from 'assert';
-
-describe('MakeMomentJSGreatAgain', () => {
-  it('handles date boundaries', () => {
-    let date;
-
-    date = new MakeMomentJSGreatAgain('1/1/2015');
-    date.addDays(30);
-    assert.equal('1/31/2015', date);
-
-    date = new MakeMomentJSGreatAgain('2/1/2016');
-    date.addDays(28);
-    assert.equal('02/29/2016', date);
-
-    date = new MakeMomentJSGreatAgain('2/1/2015');
-    date.addDays(28);
-    assert.equal('03/01/2015', date);
-  });
-});
-```
-
-**Good:**
-```javascript
-import assert from 'assert';
-
-describe('MakeMomentJSGreatAgain', () => {
-  it('handles 30-day months', () => {
-    const date = new MakeMomentJSGreatAgain('1/1/2015');
-    date.addDays(30);
-    assert.equal('1/31/2015', date);
-  });
-
-  it('handles leap year', () => {
-    const date = new MakeMomentJSGreatAgain('2/1/2016');
-    date.addDays(28);
-    assert.equal('02/29/2016', date);
-  });
-
-  it('handles non-leap year', () => {
-    const date = new MakeMomentJSGreatAgain('2/1/2015');
-    date.addDays(28);
-    assert.equal('03/01/2015', date);
-  });
-});
-```
-**[⬆ back to top](#table-of-contents)**
+## **測試**
+目前尚未導入單元測試
 
 ## **Concurrency**
 ### Use Promises, not callbacks
@@ -1805,7 +1741,7 @@ async function getCleanCodeArticle() {
 **[⬆ back to top](#table-of-contents)**
 
 
-## **Error Handling**
+## **錯誤處理**
 Thrown errors are a good thing! They mean the runtime has successfully
 identified when something in your program has gone wrong and it's letting
 you know by stopping function execution on the current stack, killing the
@@ -1878,7 +1814,7 @@ getdata()
 **[⬆ back to top](#table-of-contents)**
 
 
-## **Formatting**
+## **格式**
 Formatting is subjective. Like many rules herein, there is no hard and fast
 rule that you must follow. The main point is DO NOT ARGUE over formatting.
 There are [tons of tools](http://standardjs.com/rules.html) to automate this.
@@ -2010,7 +1946,7 @@ review.perfReview();
 
 **[⬆ back to top](#table-of-contents)**
 
-## **Comments**
+## **註解**
 ### Only comment things that have business logic complexity.
 Comments are an apology, not a requirement. Good code *mostly* documents itself.
 
@@ -2131,24 +2067,8 @@ const actions = function() {
 ```
 **[⬆ back to top](#table-of-contents)**
 
-## Translation
-
-This is also available in other languages:
-
-  - ![br](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Brazil.png) **Brazilian Portuguese**: [fesnt/clean-code-javascript](https://github.com/fesnt/clean-code-javascript)
-  - ![es](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Uruguay.png) **Spanish**: [andersontr15/clean-code-javascript](https://github.com/andersontr15/clean-code-javascript-es)
-  - ![cn](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/China.png) **Chinese**:
-    - [alivebao/clean-code-js](https://github.com/alivebao/clean-code-js)
-    - [beginor/clean-code-javascript](https://github.com/beginor/clean-code-javascript)
-  - ![de](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Germany.png) **German**: [marcbruederlin/clean-code-javascript](https://github.com/marcbruederlin/clean-code-javascript)
-  - ![kr](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/South-Korea.png) **Korean**: [qkraudghgh/clean-code-javascript-ko](https://github.com/qkraudghgh/clean-code-javascript-ko)
-  - ![pl](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Poland.png) **Polish**: [greg-dev/clean-code-javascript-pl](https://github.com/greg-dev/clean-code-javascript-pl)
-  - ![ru](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Russia.png) **Russian**:
-    - [BoryaMogila/clean-code-javascript-ru/](https://github.com/BoryaMogila/clean-code-javascript-ru/)
-    - [maksugr/clean-code-javascript](https://github.com/maksugr/clean-code-javascript)
-  - ![vi](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Vietnam.png) **Vietnamese**: [hienvd/clean-code-javascript/](https://github.com/hienvd/clean-code-javascript/)
-  - ![ja](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Japan.png) **Japanese**: [mitsuruog/clean-code-javascript/](https://github.com/mitsuruog/clean-code-javascript/)
-  - ![id](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/24/Indonesia.png) **Indonesia**:
-  [andirkh/clean-code-javascript/](https://github.com/andirkh/clean-code-javascript/)
+## 參考來源
+  - ![br]
+ [ryanmcdermott/clean-code-javascript](https://github.com/ryanmcdermott/clean-code-javascript)
 
 **[⬆ back to top](#table-of-contents)**
