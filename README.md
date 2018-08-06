@@ -1,24 +1,20 @@
-# clean-code-javascript
+# javascript 程式碼撰寫原則
 
-## Table of Contents
-  1. [介紹](#介紹)
-  2. [變數](#變數)
-  3. [函式](#函式)
-  4. [物件與資料結構](#物件與資料結構)
-  5. [類別](#類別)
-  6. [SOLID](#solid)
-  7. [測試](#測試)
-  8. [Concurrency](#concurrency)
-  9. [錯誤處理](#錯誤處理)
-  10. [格式](#格式)
-  11. [註解](#註解)
-  12. [參考來源](#參考來源)
-
-## 介紹
-javascript 程式碼撰寫原則
+## 目錄
+  1. [變數](#變數)
+  2. [函式](#函式)
+  3. [物件與資料結構](#物件與資料結構)
+  4. [類別](#類別)
+  5. [SOLID](#solid)
+  6. [測試](#測試)
+  7. [Concurrency](#concurrency)
+  8. [錯誤處理](#錯誤處理)
+  9. [格式](#格式)
+  10. [註解](#註解)
+  11. [參考來源](#參考來源)
 
 ## **變數**
-### 變數名稱的命名盡可能有意義且具備可讀性 _meaningful and pronounceable_
+### 變數名稱的命名盡可能有意義且具備可讀性 (_meaningful and pronounceable_)
 
 **Bad:**
 ```javascript
@@ -31,7 +27,7 @@ const currentDate = moment().format('YYYY/MM/DD');
 ```
 **[⬆ back to top](#table-of-contents)**
 
-### Use the same vocabulary for the same type of variable
+### 同類型的變數使用相同的變數命名字彙 (_same vocabulary for the same type of variable_)
 
 **Bad:**
 ```javascript
@@ -46,14 +42,8 @@ getUser();
 ```
 **[⬆ back to top](#table-of-contents)**
 
-### Use searchable names
-We will read more code than we will ever write. It's important that the code we
-do write is readable and searchable. By *not* naming variables that end up
-being meaningful for understanding our program, we hurt our readers.
-Make your names searchable. Tools like
-[buddy.js](https://github.com/danielstjules/buddy.js) and
-[ESLint](https://github.com/eslint/eslint/blob/660e0918933e6e7fede26bc675a0763a6b357c94/docs/rules/no-magic-numbers.md)
-can help identify unnamed constants.
+### 使用可被搜尋的名稱 (_Use searchable names_)
+讀程式碼的時間比撰寫程式碼的時間來的多，所以讓我們撰寫的程式碼具備可讀性和可被搜尋便顯得更為重要。
 
 **Bad:**
 ```javascript
@@ -72,7 +62,7 @@ setTimeout(blastOff, MILLISECONDS_IN_A_DAY);
 ```
 **[⬆ back to top](#table-of-contents)**
 
-### Use explanatory variables
+### 使用具有說明功能的變數名稱 (_Use explanatory variables_)
 **Bad:**
 ```javascript
 const address = 'One Infinite Loop, Cupertino 95014';
@@ -89,8 +79,8 @@ saveCityZipCode(city, zipCode);
 ```
 **[⬆ back to top](#table-of-contents)**
 
-### Avoid Mental Mapping
-Explicit is better than implicit.
+### 避免人為解讀程式碼對應內容 (_Avoid Mental Mapping_)
+明確的變數命名優於隱晦的變數命名
 
 **Bad:**
 ```javascript
@@ -120,9 +110,8 @@ locations.forEach((location) => {
 ```
 **[⬆ back to top](#table-of-contents)**
 
-### Don't add unneeded context
-If your class/object name tells you something, don't repeat that in your
-variable name.
+### 不增加冗贅的變數名稱資訊 (_Don't add unneeded context_)
+類別或物件的內部變數命名不需要重複相關名稱
 
 **Bad:**
 ```javascript
@@ -151,17 +140,14 @@ function paintCar(car) {
 ```
 **[⬆ back to top](#table-of-contents)**
 
-### Use default arguments instead of short circuiting or conditionals
-Default arguments are often cleaner than short circuiting. Be aware that if you
-use them, your function will only provide default values for `undefined`
-arguments. Other "falsy" values such as `''`, `""`, `false`, `null`, `0`, and
-`NaN`, will not be replaced by a default value.
+### 儘可能使用預設引數 (_try not use short circuiting or conditionals_)
+雖然使用預設引數較為簡潔，但要注意預設引數僅針對"undefined"的引數提供預設值，其餘"falsy"值並不會被預設值取代。
 
 **Bad:**
 ```javascript
 function createMicrobrewery(name) {
   const breweryName = name || 'Hipster Brew Co.';
-  // ...
+  // 使用short circuiting or conditionals
 }
 
 ```
@@ -169,7 +155,7 @@ function createMicrobrewery(name) {
 **Good:**
 ```javascript
 function createMicrobrewery(name = 'Hipster Brew Co.') {
-  // ...
+   // 使用預設參數
 }
 
 ```
@@ -2068,7 +2054,6 @@ const actions = function() {
 **[⬆ back to top](#table-of-contents)**
 
 ## 參考來源
-  - ![br]
- [ryanmcdermott/clean-code-javascript](https://github.com/ryanmcdermott/clean-code-javascript)
+  - [ryanmcdermott/clean-code-javascript](https://github.com/ryanmcdermott/clean-code-javascript)
 
 **[⬆ back to top](#table-of-contents)**
