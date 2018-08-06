@@ -162,33 +162,16 @@ function createMicrobrewery(name = 'Hipster Brew Co.') {
 **[⬆ back to top](#目錄)**
 
 ## **函式**
-### Function arguments (2 or fewer ideally)
-Limiting the amount of function parameters is incredibly important because it
-makes testing your function easier. Having more than three leads to a
-combinatorial explosion where you have to test tons of different cases with
-each separate argument.
+### 函式引數 (盡可能少於兩個)
 
-One or two arguments is the ideal case, and three should be avoided if possible.
-Anything more than that should be consolidated. Usually, if you have
-more than two arguments then your function is trying to do too much. In cases
-where it's not, most of the time a higher-level object will suffice as an
-argument.
+考量點如下:
+1. 利於函式單元測試
+2. 過多的引數可能代表此函式嘗試實現太多功能
 
-Since JavaScript allows you to make objects on the fly, without a lot of class
-boilerplate, you can use an object if you are finding yourself needing a
-lot of arguments.
-
-To make it obvious what properties the function expects, you can use the ES2015/ES6
-destructuring syntax. This has a few advantages:
-
-1. When someone looks at the function signature, it's immediately clear what
-properties are being used.
-2. Destructuring also clones the specified primitive values of the argument
-object passed into the function. This can help prevent side effects. Note:
-objects and arrays that are destructured from the argument object are NOT
-cloned.
-3. Linters can warn you about unused properties, which would be impossible
-without destructuring.
+若確實需要更多的引數，可將引數製作成物件並於函式內使用物件解構語法，優點如下。
+1. 當其他人檢視函式簽名時(参数個数、参数类型和返回值)，可立即了解該函式的所需引數內容
+2. 解構語法複製了引數物件的屬性基值，此舉可協助避免副作用(備註:解構出來的物件和陣列其內容並非複製)
+3. 利用linters警示未使用的屬性
 
 **Bad:**
 ```javascript
@@ -203,6 +186,7 @@ function createMenu({ title, body, buttonText, cancellable }) {
   // ...
 }
 
+  // 函數簽名
 createMenu({
   title: 'Foo',
   body: 'Bar',
@@ -213,12 +197,8 @@ createMenu({
 **[⬆ back to top](#目錄)**
 
 
-### Functions should do one thing
-This is by far the most important rule in software engineering. When functions
-do more than one thing, they are harder to compose, test, and reason about.
-When you can isolate a function to just one action, they can be refactored
-easily and your code will read much cleaner. If you take nothing else away from
-this guide other than this, you'll be ahead of many developers.
+### 單一函式只應實現單一功能
+當單一函式欲實現太多功能，會使其變得難以撰寫、測試和推斷，當你能獨立單一功能成一個函式時，這些函式將變得更簡潔且易於重構。
 
 **Bad:**
 ```javascript
@@ -247,7 +227,7 @@ function isActiveClient(client) {
 ```
 **[⬆ back to top](#目錄)**
 
-### Function names should say what they do
+### 函式的名稱應當具體表示其實作的功能
 
 **Bad:**
 ```javascript
@@ -272,10 +252,8 @@ addMonthToDate(1, date);
 ```
 **[⬆ back to top](#目錄)**
 
-### Functions should only be one level of abstraction
-When you have more than one level of abstraction your function is usually
-doing too much. Splitting up functions leads to reusability and easier
-testing.
+### 函式的單層歸納原則(_Single Level of Abstraction_)
+當單一函式內部含有多層的程式碼實作邏輯時，代表此函式通常已實作過多功能，此時可拆分此函式成多個不同函式，讓函式易測試和再利用。
 
 **Bad:**
 ```javascript
@@ -340,27 +318,8 @@ function lexer(tokens) {
 ```
 **[⬆ back to top](#目錄)**
 
-### Remove duplicate code
-Do your absolute best to avoid duplicate code. Duplicate code is bad because it
-means that there's more than one place to alter something if you need to change
-some logic.
-
-Imagine if you run a restaurant and you keep track of your inventory: all your
-tomatoes, onions, garlic, spices, etc. If you have multiple lists that
-you keep this on, then all have to be updated when you serve a dish with
-tomatoes in them. If you only have one list, there's only one place to update!
-
-Oftentimes you have duplicate code because you have two or more slightly
-different things, that share a lot in common, but their differences force you
-to have two or more separate functions that do much of the same things. Removing
-duplicate code means creating an abstraction that can handle this set of
-different things with just one function/module/class.
-
-Getting the abstraction right is critical, that's why you should follow the
-SOLID principles laid out in the *Classes* section. Bad abstractions can be
-worse than duplicate code, so be careful! Having said this, if you can make
-a good abstraction, do it! Don't repeat yourself, otherwise you'll find yourself
-updating multiple places anytime you want to change one thing.
+### 刪除重複的程式碼(_Dry Your Code_)
+重複的程式碼意味著當實作功能需要調整時，需要修正的程式碼內容變多，
 
 **Bad:**
 ```javascript
@@ -422,7 +381,7 @@ function showEmployeeList(employees) {
 ```
 **[⬆ back to top](#目錄)**
 
-### Set default objects with Object.assign
+### 應用"Object.assign"設定預設物件
 
 **Bad:**
 ```javascript
@@ -469,8 +428,8 @@ createMenu(menuConfig);
 **[⬆ back to top](#目錄)**
 
 
-### Don't use flags as function parameters
-Flags tell your user that this function does more than one thing. Functions should do one thing. Split out your functions if they are following different code paths based on a boolean.
+### 避免使用"flags"作為函式引數
+函式具有"Flags"的函示引數表示此函數實作了不只一項功能，此時可將這些功能實作成不同函式，進而避免使用flags函式引數。
 
 **Bad:**
 ```javascript
@@ -495,21 +454,12 @@ function createTempFile(name) {
 ```
 **[⬆ back to top](#目錄)**
 
-### Avoid Side Effects (part 1)
-A function produces a side effect if it does anything other than take a value in
-and return another value or values. A side effect could be writing to a file,
-modifying some global variable, or accidentally wiring all your money to a
-stranger.
+### 避免副作用(part 1)
 
-Now, you do need to have side effects in a program on occasion. Like the previous
-example, you might need to write to a file. What you want to do is to
-centralize where you are doing this. Don't have several functions and classes
-that write to a particular file. Have one service that does it. One and only one.
-
-The main point is to avoid common pitfalls like sharing state between objects
-without any structure, using mutable data types that can be written to by anything,
-and not centralizing where your side effects occur. If you can do this, you will
-be happier than the vast majority of other programmers.
+當函式做的不只是接收與回傳值時，極可能產生副作用，如寫入檔案或是更改全域變數。
+主要的重點如下:
+1. 避免在無預期的情況下共享物件的狀態
+2. 使用可被任何人改寫的資料類型
 
 **Bad:**
 ```javascript
@@ -540,13 +490,17 @@ console.log(newName); // ['Ryan', 'McDermott'];
 ```
 **[⬆ back to top](#目錄)**
 
-### Avoid Side Effects (part 2)
+### 避免副作用(part 2)
+
 In JavaScript, primitives are passed by value and objects/arrays are passed by
-reference. In the case of objects and arrays, if your function makes a change
+reference.
+In the case of objects and arrays, if your function makes a change
 in a shopping cart array, for example, by adding an item to purchase,
 then any other function that uses that `cart` array will be affected by this
-addition. That may be great, however it can be bad too. Let's imagine a bad
-situation:
+addition. 
+That may be great, however it can be bad too. 
+
+Let's imagine a bad situation:
 
 The user clicks the "Purchase", button which calls a `purchase` function that
 spawns a network request and sends the `cart` array to the server. Because
@@ -559,7 +513,8 @@ cart array that the `addItemToCart` function modified by adding an unwanted
 item.
 
 A great solution would be for the `addItemToCart` to always clone the `cart`,
-edit it, and return the clone. This ensures that no other functions that are
+edit it, and return the clone.
+This ensures that no other functions that are
 holding onto a reference of the shopping cart will be affected by any changes.
 
 Two caveats to mention to this approach:
