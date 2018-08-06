@@ -1,8 +1,8 @@
 # clean-code-javascript
 
 ## Table of Contents
-  1. [介紹](#introduction)
-  2. [Variables](#variables)
+  1. [介紹](#介紹)
+  2. [變數](#變數)
   3. [Functions](#functions)
   4. [Objects and Data Structures](#objects-and-data-structures)
   5. [Classes](#classes)
@@ -14,11 +14,11 @@
   11. [Comments](#comments)
   12. [Translation](#translation)
 
-## Introduction
+## 介紹
 javascript 程式碼撰寫原則
 
-## **Variables**
-### Use meaningful and pronounceable variable names
+## **變數**
+### 變數名稱的命名盡可能有意義且具備可讀性 (_meaningful and pronounceable_)
 
 **Bad:**
 ```javascript
