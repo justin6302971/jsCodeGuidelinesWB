@@ -7,7 +7,7 @@
   4. [類別](#類別)
   5. [SOLID](#solid)
   6. [測試](#測試)
-  7. [Concurrency](#concurrency)
+  7. [併發](#併發)
   8. [錯誤處理](#錯誤處理)
   9. [格式](#格式)
   10. [註解](#註解)
@@ -491,42 +491,11 @@ console.log(newName); // ['Ryan', 'McDermott'];
 **[⬆ back to top](#目錄)**
 
 ### 避免副作用(part 2)
-
-In JavaScript, primitives are passed by value and objects/arrays are passed by
-reference.
-In the case of objects and arrays, if your function makes a change
-in a shopping cart array, for example, by adding an item to purchase,
-then any other function that uses that `cart` array will be affected by this
-addition. 
-That may be great, however it can be bad too. 
-
-Let's imagine a bad situation:
-
-The user clicks the "Purchase", button which calls a `purchase` function that
-spawns a network request and sends the `cart` array to the server. Because
-of a bad network connection, the `purchase` function has to keep retrying the
-request. Now, what if in the meantime the user accidentally clicks "Add to Cart"
-button on an item they don't actually want before the network request begins?
-If that happens and the network request begins, then that purchase function
-will send the accidentally added item because it has a reference to a shopping
-cart array that the `addItemToCart` function modified by adding an unwanted
-item.
-
-A great solution would be for the `addItemToCart` to always clone the `cart`,
-edit it, and return the clone.
-This ensures that no other functions that are
-holding onto a reference of the shopping cart will be affected by any changes.
-
-Two caveats to mention to this approach:
-  1. There might be cases where you actually want to modify the input object,
-but when you adopt this programming practice you will find that those cases
-are pretty rare. Most things can be refactored to have no side effects!
-
-  2. Cloning big objects can be very expensive in terms of performance. Luckily,
-this isn't a big issue in practice because there are
-[great libraries](https://facebook.github.io/immutable-js/) that allow
-this kind of programming approach to be fast and not as memory intensive as
-it would be for you to manually clone objects and arrays.
+在JavaScript中，基值以值傳遞，而物件或陣列則以參考的方式傳遞，當你的函式修改了物件或陣列的內部值時，其他使用該物件或陣列的函式亦會受到影響。
+較佳的情況為複製該物件或陣列並回傳複製的結果，而非直接修改該物件或陣列的內部值。
+針對此概念有下列注意事項:
+1. 可能存在某些情形，開發者還是必須修該傳入物件內容，但當此類情況相當罕見且通常可以透過重構來修正函式邏輯，以避免副作用的產生。
+2. 複製較複雜的物件可能導致程式運算效能降低，但是現在有許多[函式庫](https://facebook.github.io/immutable-js/)實作了複製物件的高效能算法，可以自由參考。ㄋ
 
 **Bad:**
 ```javascript
@@ -544,16 +513,12 @@ const addItemToCart = (cart, item) => {
 
 **[⬆ back to top](#目錄)**
 
-### Don't write to global functions
-Polluting globals is a bad practice in JavaScript because you could clash with another
-library and the user of your API would be none-the-wiser until they get an
-exception in production. Let's think about an example: what if you wanted to
-extend JavaScript's native Array method to have a `diff` method that could
-show the difference between two arrays? You could write your new function
-to the `Array.prototype`, but it could clash with another library that tried
-to do the same thing. What if that other library was just using `diff` to find
-the difference between the first and last elements of an array? This is why it
-would be much better to just use ES2015/ES6 classes and simply extend the `Array` global.
+### 避免設計依賴全域變數的函式或是修改全域函式
+產生全域變數在JavaScript中是個不好的實踐，原因如下，
+1. 撰寫的程式碼可能與其他函式庫衝突，而應用此API的開發者可能到了產品階段時的例外才發現這類型的錯誤。
+2. 使用的全域變數若被其他函式複寫或修改內容，可能導致此函式發生無預期的錯誤。
+
+較佳的作法為利用ES2015/ES6 的類別(_Class_)語法，繼承既有Array功能，並擴充新類別的功能。
 
 **Bad:**
 ```javascript
@@ -574,10 +539,8 @@ class SuperArray extends Array {
 ```
 **[⬆ back to top](#目錄)**
 
-### Favor functional programming over imperative programming
-JavaScript isn't a functional language in the way that Haskell is, but it has
-a functional flavor to it. Functional languages can be cleaner and easier to test.
-Favor this style of programming when you can.
+### 傾向使用函式程式設計(_functional programming_)替代指令式程式設計(_imperative programming_)
+ 有別於Haskell，JavaScript並不是一個純粹的函數程式語言，但是開發者可以利用JavaScript實現函式程式設計的特色並享受此類程式設計方法帶來的優點，函式程式設計通常較為簡潔並易於測試。
 
 **Bad:**
 ```javascript
@@ -628,12 +591,13 @@ const totalOutput = programmerOutput
 ```
 **[⬆ back to top](#目錄)**
 
-### Encapsulate conditionals
+### 封裝條件式 (_Encapsulate conditionals_)
+考量到條件式的內容可能改變和易於測試的原因，可嘗試將條件式判斷內容[封裝成函式](https://softwareengineering.stackexchange.com/questions/339460/what-are-the-benefits-of-encapsulating-conditionals-in-functions)
 
 **Bad:**
 ```javascript
 if (fsm.state === 'fetching' && isEmpty(listNode)) {
-  // ...
+  //
 }
 ```
 
@@ -649,7 +613,7 @@ if (shouldShowSpinner(fsmInstance, listNodeInstance)) {
 ```
 **[⬆ back to top](#目錄)**
 
-### Avoid negative conditionals
+### 避免使用否定條件式 (_Avoid negative conditionals_)
 
 **Bad:**
 ```javascript
@@ -674,15 +638,9 @@ if (isDOMNodePresent(node)) {
 ```
 **[⬆ back to top](#目錄)**
 
-### Avoid conditionals
-This seems like an impossible task. Upon first hearing this, most people say,
-"how am I supposed to do anything without an `if` statement?" The answer is that
-you can use polymorphism to achieve the same task in many cases. The second
-question is usually, "well that's great but why would I want to do that?" The
-answer is a previous clean code concept we learned: a function should only do
-one thing. When you have classes and functions that have `if` statements, you
-are telling your user that your function does more than one thing. Remember,
-just do one thing.
+### 盡可能避免使用條件式，但不強制 (_Avoid conditionals_)
+若採用物件導向程式設計(OOP)的方式開發，在很多情境下可以考慮利用多形的方式(polymorphism)去達到取代使用條件式的開發方式，原因在於符合先前提到的一個重點，一個函式盡可能只實作一種功能，若函式中存在條件式，則代表一個函式作超過一件事。
+
 
 **Bad:**
 ```javascript
@@ -730,11 +688,9 @@ class Cessna extends Airplane {
 ```
 **[⬆ back to top](#目錄)**
 
-### Avoid type-checking (part 1)
-JavaScript is untyped, which means your functions can take any type of argument.
-Sometimes you are bitten by this freedom and it becomes tempting to do
-type-checking in your functions. There are many ways to avoid having to do this.
-The first thing to consider is consistent APIs.
+### 避免使用型別確認(part 1)
+在Javascript中，函式可傳入任意型別的引數，但是開發者常常會變這樣的自由度給反咬一口，為此，型別確認是通常的因應做法，但是，若開發時針對函式命名和功能測試進行評估之後，往往會發現有很多做法可以避免這種行為，考量API的一致性後修正的內容範例如下。
+
 
 **Bad:**
 ```javascript
@@ -755,16 +711,9 @@ function travelToTexas(vehicle) {
 ```
 **[⬆ back to top](#目錄)**
 
-### Avoid type-checking (part 2)
-If you are working with basic primitive values like strings and integers,
-and you can't use polymorphism but you still feel the need to type-check,
-you should consider using TypeScript. It is an excellent alternative to normal
-JavaScript, as it provides you with static typing on top of standard JavaScript
-syntax. The problem with manually type-checking normal JavaScript is that
-doing it well requires so much extra verbiage that the faux "type-safety" you get
-doesn't make up for the lost readability. Keep your JavaScript clean, write
-good tests, and have good code reviews. Otherwise, do all of that but with
-TypeScript (which, like I said, is a great alternative!).
+### 避免使用型別確認(part 2)
+當開發者在設計的函式面對基值(字串和整數等等)時，則無法採用多型的方式設計
+，此時則可以考慮使用TypeScript撰寫相關語法，因為Typescript在基於標準JavaScript語法上提供了靜態的型別檢驗功能。
 
 **Bad:**
 ```javascript
@@ -786,12 +735,8 @@ function combine(val1, val2) {
 ```
 **[⬆ back to top](#目錄)**
 
-### Don't over-optimize
-Modern browsers do a lot of optimization under-the-hood at runtime. A lot of
-times, if you are optimizing then you are just wasting your time. [There are good
-resources](https://github.com/petkaantonov/bluebird/wiki/Optimization-killers)
-for seeing where optimization is lacking. Target those in the meantime, until
-they are fixed if they can be.
+### 別過度最佳化 (_Don't over-optimize_)
+較近代的瀏覽器在運行時已經針對程式碼進行最佳化了，很多時候你在程式碼上的撰寫的最佳化僅是再浪費你的時間，以下[資源](https://github.com/petkaantonov/bluebird/wiki/Optimization-killers)是瀏覽器目前最佳化時並未考量的部分，在此部份調整之前請針對這些部分修正程式碼撰寫方式。
 
 **Bad:**
 ```javascript
@@ -811,10 +756,8 @@ for (let i = 0; i < list.length; i++) {
 ```
 **[⬆ back to top](#目錄)**
 
-### Remove dead code
-Dead code is just as bad as duplicate code. There's no reason to keep it in
-your codebase. If it's not being called, get rid of it! It will still be safe
-in your version history if you still need it.
+### 刪除不必要的程式碼
+不使用的程式碼理論上不應該出現在程式檔案中，如果該程式碼已存在修正後的新版本，請刪除舊有的程式碼，其他的程式碼還原議題留給版次控管紀錄處理。
 
 **Bad:**
 ```javascript
@@ -1162,15 +1105,13 @@ class Employee {
 **[⬆ back to top](#目錄)**
 
 ## **SOLID**
-### Single Responsibility Principle (SRP)
-As stated in Clean Code, "There should never be more than one reason for a class
-to change". It's tempting to jam-pack a class with a lot of functionality, like
-when you can only take one suitcase on your flight. The issue with this is
-that your class won't be conceptually cohesive and it will give it many reasons
-to change. Minimizing the amount of times you need to change a class is important.
-It's important because if too much functionality is in one class and you modify
-a piece of it, it can be difficult to understand how that will affect other
-dependent modules in your codebase.
+[物件導向設計原則](https://medium.com/@cramirez92/s-o-l-i-d-the-first-5-priciples-of-object-oriented-design-with-javascript-790f6ac9b9fa)
+
+### 單一功能 (_Single Responsibility Principle_)
+減少需要調整類別時間與機會是非常重要的，單一類別具備過多功能可能會導致下列問題，
+1. 類別所表示的概念不清楚
+2. 很可能會產生需要修改此類別的情境
+再者當修改某一父類別時，亦很難去釐清所有相依此類別的子類別受到何種影響。
 
 **Bad:**
 ```javascript
@@ -1219,11 +1160,13 @@ class UserSettings {
 ```
 **[⬆ back to top](#目錄)**
 
-### Open/Closed Principle (OCP)
+### 開閉原則 (_Open/Closed Principle_)
+
+此原則基本上表示開發者在設計類別時，必須允許其餘開發者能再不調整此類別的情況下新增功能，即透過繼承的方式取得既有類別內容並於子類別新增功能。
+
 As stated by Bertrand Meyer, "software entities (classes, modules, functions,
-etc.) should be open for extension, but closed for modification." What does that
-mean though? This principle basically states that you should allow users to
-add new functionalities without changing existing code.
+etc.) should be open for extension, but closed for modification."
+
 
 **Bad:**
 ```javascript
@@ -1306,19 +1249,17 @@ class HttpRequester {
 ```
 **[⬆ back to top](#目錄)**
 
-### Liskov Substitution Principle (LSP)
-This is a scary term for a very simple concept. It's formally defined as "If S
-is a subtype of T, then objects of type T may be replaced with objects of type S
-(i.e., objects of type S may substitute objects of type T) without altering any
-of the desirable properties of that program (correctness, task performed,
+### 里氏替換 (_Liskov Substitution Principle_)
+若S類別是T類別的子類別，那麼T類別應能在不修改任何屬性的情況下由S類別替換(詳下列原文)。
+This is a scary term for a very simple concept. 
+It's formally defined as "If S is a subtype of T, then objects of type T may be replaced with objects of type S (i.e., objects of type S may substitute objects of type T) without altering any of the desirable properties of that program (correctness, task performed,
 etc.)." That's an even scarier definition.
 
 The best explanation for this is if you have a parent class and a child class,
 then the base class and child class can be used interchangeably without getting
 incorrect results. This might still be confusing, so let's take a look at the
 classic Square-Rectangle example. Mathematically, a square is a rectangle, but
-if you model it using the "is-a" relationship via inheritance, you quickly
-get into trouble.
+if you model it using the "is-a" relationship via inheritance, you quickly get into trouble.
 
 **Bad:**
 ```javascript
@@ -1421,10 +1362,9 @@ renderLargeShapes(shapes);
 ```
 **[⬆ back to top](#目錄)**
 
-### Interface Segregation Principle (ISP)
-JavaScript doesn't have interfaces so this principle doesn't apply as strictly
-as others. However, it's important and relevant even with JavaScript's lack of
-type system.
+### 接口隔離 (_Interface Segregation Principle_) 
+JavaScript doesn't have interfaces so this principle doesn't apply as strictly as others. 
+However, it's important and relevant even with JavaScript's lack of type system.
 
 ISP states that "Clients should not be forced to depend upon interfaces that
 they do not use." Interfaces are implicit contracts in JavaScript because of
@@ -1496,23 +1436,14 @@ const $ = new DOMTraverser({
 ```
 **[⬆ back to top](#目錄)**
 
-### Dependency Inversion Principle (DIP)
+### 依賴反轉 (_Dependency Inversion Principle_)
 This principle states two essential things:
-1. High-level modules should not depend on low-level modules. Both should
-depend on abstractions.
-2. Abstractions should not depend upon details. Details should depend on
-abstractions.
+1. High-level modules should not depend on low-level modules. Both should depend on abstractions.
+2. Abstractions should not depend upon details. Details should depend on abstractions.
 
-This can be hard to understand at first, but if you've worked with AngularJS,
-you've seen an implementation of this principle in the form of Dependency
-Injection (DI). While they are not identical concepts, DIP keeps high-level
-modules from knowing the details of its low-level modules and setting them up.
-It can accomplish this through DI. A huge benefit of this is that it reduces
-the coupling between modules. Coupling is a very bad development pattern because
-it makes your code hard to refactor.
+This can be hard to understand at first, but if you've worked with AngularJS, you've seen an implementation of this principle in the form of Dependency Injection (DI). While they are not identical concepts, DIP keeps high-level modules from knowing the details of its low-level modules and setting them up. It can accomplish this through DI. A huge benefit of this is that it reduces the coupling between modules. Coupling is a very bad development pattern because it makes your code hard to refactor.
 
-As stated previously, JavaScript doesn't have interfaces so the abstractions
-that are depended upon are implicit contracts. That is to say, the methods
+As stated previously, JavaScript doesn't have interfaces so the abstractions that are depended upon are implicit contracts. That is to say, the methods
 and properties that an object/class exposes to another object/class. In the
 example below, the implicit contract is that any Request module for an
 `InventoryTracker` will have a `requestItems` method.
@@ -1594,10 +1525,12 @@ inventoryTracker.requestItems();
 ## **測試**
 目前尚未導入單元測試
 
-## **Concurrency**
-### Use Promises, not callbacks
-Callbacks aren't clean, and they cause excessive amounts of nesting. With ES2015/ES6,
-Promises are a built-in global type. Use them!
+## **併發**
+併發(_Concurrency_)指的是在一個處理器(_processor_)上，數個程序(_process_)或是執行緒(_thread_)的執行順序是彼此相關的，也就是有先後順序的意思。
+[Concurrency(併發) and Parallelism(並行)](http://chubahowsmall.blogspot.com/2013/11/concurrency-and-parallelism.html)
+
+### 使用Promises取代callbacks
+Callbacks並不簡潔且實務上撰寫容易產生大量的巢狀結構(callback hell),若使用 ES2015/ES6語法可使用Promises取代原來的callback寫法。
 
 **Bad:**
 ```javascript
@@ -1639,12 +1572,8 @@ get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin')
 ```
 **[⬆ back to top](#目錄)**
 
-### Async/Await are even cleaner than Promises
-Promises are a very clean alternative to callbacks, but ES2017/ES8 brings async and await
-which offer an even cleaner solution. All you need is a function that is prefixed
-in an `async` keyword, and then you can write your logic imperatively without
-a `then` chain of functions. Use this if you can take advantage of ES2017/ES8 features
-today!
+### 亦可使用Async/Await語法取代Promises
+ES2017/ES8帶來了async and await語法，讓開發者能用更簡潔的語法去作非同步程式設計。
 
 **Bad:**
 ```javascript
@@ -1683,18 +1612,10 @@ async function getCleanCodeArticle() {
 
 
 ## **錯誤處理**
-Thrown errors are a good thing! They mean the runtime has successfully
-identified when something in your program has gone wrong and it's letting
-you know by stopping function execution on the current stack, killing the
-process (in Node), and notifying you in the console with a stack trace.
+拋出錯誤是好事，這意味著運行中的程式成功的辨識程式的錯誤。讓開發者能透過錯誤堆疊軌跡追蹤錯誤(stack trace)並除錯。
 
-### Don't ignore caught errors
-Doing nothing with a caught error doesn't give you the ability to ever fix
-or react to said error. Logging the error to the console (`console.log`)
-isn't much better as often times it can get lost in a sea of things printed
-to the console. If you wrap any bit of code in a `try/catch` it means you
-think an error may occur there and therefore you should have a plan,
-or create a code path, for when it occurs.
+### 別忽略錯誤
+忽視程序錯誤或是將錯誤紀錄傳送至命令列並無法解決事情，最好的情況是透過適當方式追蹤或記錄相關錯誤，以利於後續除錯。
 
 **Bad:**
 ```javascript
@@ -1720,9 +1641,7 @@ try {
 }
 ```
 
-### Don't ignore rejected promises
-For the same reason you shouldn't ignore caught errors
-from `try/catch`.
+### 別忽略被拒絕的非同步請求(rejected promises)
 
 **Bad:**
 ```javascript
@@ -1756,19 +1675,15 @@ getdata()
 
 
 ## **格式**
-Formatting is subjective. Like many rules herein, there is no hard and fast
-rule that you must follow. The main point is DO NOT ARGUE over formatting.
-There are [tons of tools](http://standardjs.com/rules.html) to automate this.
-Use one! It's a waste of time and money for engineers to argue over formatting.
+格式調整是非常主觀的，主要的重點在於別針對特定的格是過度矯正程式碼的撰寫位置，有許多[自動化的工具](http://standardjs.com/rules.html)能處理這類議題。
+除了自動修正程式碼格式的議題外(indentation, tabs vs. spaces, double vs. single quotes, etc.)，可參考此處對於格式的意見。
 
-For things that don't fall under the purview of automatic formatting
-(indentation, tabs vs. spaces, double vs. single quotes, etc.) look here
-for some guidance.
+### 大寫命名的一致性
+因為JavaScript並非強型別的程式語言(JavaScript is untyped)，所以變數名稱的大寫可以告訴開發者許多資訊，但這些規則也是非常主觀的，請自由選擇是否採用，但重點在於請相同團隊的成員在開發時保持一致性，以下列出幾點作為參考。
+1. 全部大寫並以底線作為單字之間的命名方式代表"常數"。
+2. 單字字首為大寫的命名方式代表"類別"(Pascal Case)。
+3. 其餘命名盡量以駝峰式的命名方式(CamelCase)。
 
-### Use consistent capitalization
-JavaScript is untyped, so capitalization tells you a lot about your variables,
-functions, etc. These rules are subjective, so your team can choose whatever
-they want. The point is, no matter what you all choose, just be consistent.
 
 **Bad:**
 ```javascript
@@ -1803,9 +1718,9 @@ class Alpaca {}
 
 
 ### Function callers and callees should be close
-If a function calls another, keep those functions vertically close in the source
-file. Ideally, keep the caller right above the callee. We tend to read code from
-top-to-bottom, like a newspaper. Because of this, make your code read that way.
+
+因為開發者多由上至下閱讀程式碼，在理想的情況之下，函式的呼叫者(caller)在被呼叫的函式(callee)的上方，換句話說，撰寫的方式考量讀程式碼的順序為主。
+
 
 **Bad:**
 ```javascript
@@ -1888,8 +1803,8 @@ review.perfReview();
 **[⬆ back to top](#目錄)**
 
 ## **註解**
-### Only comment things that have business logic complexity.
-Comments are an apology, not a requirement. Good code *mostly* documents itself.
+### 僅註解程式碼中複雜的商業邏輯部分
+註解僅是補充說明，簡潔程式碼通常在撰寫時的命名和回傳值設計上就已經說明功能和使用方法，即符合程式碼及文件的需求。
 
 **Bad:**
 ```javascript
@@ -1931,8 +1846,8 @@ function hashIt(data) {
 ```
 **[⬆ back to top](#目錄)**
 
-### Don't leave commented out code in your codebase
-Version control exists for a reason. Leave old code in your history.
+### 別留下註解的程式碼
+版次管控的存在是有原因的。
 
 **Bad:**
 ```javascript
@@ -1948,9 +1863,8 @@ doStuff();
 ```
 **[⬆ back to top](#目錄)**
 
-### Don't have journal comments
-Remember, use version control! There's no need for dead code, commented code,
-and especially journal comments. Use `git log` to get history!
+### 別留下註解日誌
+請透過版次控管查詢程式碼歷史變動內容。
 
 **Bad:**
 ```javascript
@@ -1973,9 +1887,8 @@ function combine(a, b) {
 ```
 **[⬆ back to top](#目錄)**
 
-### Avoid positional markers
-They usually just add noise. Let the functions and variable names along with the
-proper indentation and formatting give the visual structure to your code.
+### 避免分區的註解符號
+僅須透過正確的縮排(indentation)跟格式調整(formatting)讓其他開發者能夠已正常的程式碼結構讀你開發的程式碼。
 
 **Bad:**
 ```javascript
