@@ -787,18 +787,12 @@ inventoryTracker('apples', req, 'www.inventory-awesome.io');
 
 ## **物件與資料結構**
 ### Use getters and setters
-Using getters and setters to access data on objects could be better than simply
-looking for a property on an object. "Why?" you might ask. Well, here's an
-unorganized list of reasons why:
-
-* When you want to do more beyond getting an object property, you don't have
-to look up and change every accessor in your codebase.
-* Makes adding validation simple when doing a `set`.
-* Encapsulates the internal representation.
-* Easy to add logging and error handling when getting and setting.
-* You can lazy load your object's properties, let's say getting it from a
-server.
-
+使用getters和setters存取物件內的資料的設計方式比起回傳整個物件並檢視所需物件屬性來得好，原因如下，
+* 當開發者不僅是要取出物件屬性而要進一步修改功能時，開發者僅需要針對特定的getter做調整。
+* 當設定屬性時，驗證變得較為簡單
+* 封裝內部屬性
+* 當設定或是取值時，記錄和錯誤處理變得更為容易
+* 當伺服器載入物件屬性時，可以實現lazy load
 
 **Bad:**
 ```javascript
@@ -845,8 +839,8 @@ account.setBalance(100);
 **[⬆ back to top](#目錄)**
 
 
-### Make objects have private members
-This can be accomplished through closures (for ES5 and below).
+### 讓物件具有私有成員
+此概念可以透過閉包(closures)實現。
 
 **Bad:**
 ```javascript
@@ -884,11 +878,8 @@ console.log(`Employee name: ${employee.getName()}`); // Employee name: John Doe
 
 
 ## **類別**
-### Prefer ES2015/ES6 classes over ES5 plain functions
-It's very difficult to get readable class inheritance, construction, and method
-definitions for classical ES5 classes. If you need inheritance (and be aware
-that you might not), then prefer ES2015/ES6 classes. However, prefer small functions over
-classes until you find yourself needing larger and more complex objects.
+### 傾向使用ES2015/ES6往後的語法
+若評估之後需要使用javascript 原型繼承的概念進行程式設計，請使用ES2015/ES6的類別語法，但是，若並不需要設計複雜行為的話，可以考量用一般函式設計即可。
 
 **Bad:**
 ```javascript
@@ -960,12 +951,9 @@ class Human extends Mammal {
 **[⬆ back to top](#目錄)**
 
 
-### Use method chaining
-This pattern is very useful in JavaScript and you see it in many libraries such
-as jQuery and Lodash. It allows your code to be expressive, and less verbose.
-For that reason, I say, use method chaining and take a look at how clean your code
-will be. In your class functions, simply return `this` at the end of every function,
-and you can chain further class methods onto it.
+### 使用方法鏈接（_method chaining_）
+這類型的設計模式在JavaScript非常常見且好用，此舉除了能讓你撰寫的程式碼更讓人容易了解且簡潔，而以類別為例，在其內部函式中回傳this就可以實現此模式。
+
 
 **Bad:**
 ```javascript
@@ -1038,18 +1026,13 @@ const car = new Car('Ford','F-150','red')
 ```
 **[⬆ back to top](#目錄)**
 
-### Prefer composition over inheritance
-As stated famously in [*Design Patterns*](https://en.wikipedia.org/wiki/Design_Patterns) by the Gang of Four,
-you should prefer composition over inheritance where you can. There are lots of
-good reasons to use inheritance and lots of good reasons to use composition.
-The main point for this maxim is that if your mind instinctively goes for
-inheritance, try to think if composition could model your problem better. In some
-cases it can.
+### 傾向使用複合關係(_composition_)取代繼承關係(_inheritance_) 
 
-You might be wondering then, "when should I use inheritance?" It
-depends on your problem at hand, but this is a decent list of when inheritance
-makes more sense than composition:
+[為何說composition優於inheritance](https://tw.twincl.com/programming/*662v)
 
+[*Design Patterns*](https://en.wikipedia.org/wiki/Design_Patterns)
+此部分的重點並非要求開發者不要使用繼承關係，而是要求開發者當直覺評估應該透過繼承關係設計物件行為時，可以試著思考若透過複合關係去設計能否更好的結構化問題。
+以下有幾點關於何時該使用繼承關係設計物件的建議：
 1. Your inheritance represents an "is-a" relationship and not a "has-a"
 relationship (Human->Animal vs. User->UserDetails).
 2. You can reuse code from the base classes (Humans can move like all animals).
